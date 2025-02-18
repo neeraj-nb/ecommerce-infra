@@ -71,6 +71,9 @@ with Diagram("Kubernetes Deployment with ArgoCD", show=False, direction="TB"):
             user_service >> ss
             order_service >> ss
             payment_service >> ss
+            cart_service >> ss
+            product_service >> ss
+            inventory_service >> ss
             ss >> db
 
         # Vault & Kubernetes Secrets
