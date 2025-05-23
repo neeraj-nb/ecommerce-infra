@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-gateway-config
+data:
+  default.conf: |
+    server {
+        listen 80;
+
+        location /user/ {
+            proxy_pass http://user-service/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header Authorization $http_authorization;
+        }
+
+        # location /product/ {
+        #     proxy_pass http://product-service/;
+        #     proxy_set_header Host $host;
+        #     proxy_set_header X-Real-IP $remote_addr;
+        #     proxy_set_header Authorization $http_authorization;
+        # }
+
+        # Optional: forward JWT to /auth/verify
+        location /auth/verify/ {
+            proxy_pass http://user-service/auth/verify/;
+        }
+
+        # Add more services below as needed
+    }
