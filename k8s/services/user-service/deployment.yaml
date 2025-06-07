@@ -1,21 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: user
+  name: user-service
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: user
+      app: user-service
     # startegy
   template:
     metadata:
       labels:
-        app: user
+        app: user-service
     spec:
       containers:
-      - name: user
-        image: neerajbabu/user:latest
+      - name: user-service
+        image: neerajbabu/user-service:latest
+        command: ["/start.prod.sh"]
         resources:
           limits:
             memory: "128Mi"
@@ -24,6 +25,6 @@ spec:
         - containerPort: 8000
         envFrom:
         - configMapRef:
-            name: user-configmap
+            name: user-service-configmap
         - secretRef:
-            name: user-secret
+            name: user-service-secret

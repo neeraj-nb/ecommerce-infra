@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: user-database
+spec:
+  selector:
+    matchLabels:
+      app: user-database
+  serviceName: "user-database-service"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: user-database
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:15
+          ports:
+            - containerPort: 5432
+          envFrom:
+          - configMapRef:
+              name: user-database-configmap
+          - secretRef:
+              name: user-database-secret
+          volumeMounts:
+            - name: pgdata
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: pgdata
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
+
