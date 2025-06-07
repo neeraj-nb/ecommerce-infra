@@ -1,0 +1,17 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: user-service-job-migrate
+spec:
+  template:
+    spec:
+      containers:
+      - name: migrate
+        image: neerajbabu/user-service:latest
+        envFrom:
+        - configMapRef:
+            name: user-service-configmap
+        - secretRef:
+            name: user-service-secret
+        command: ["python", "manage.py", "migrate", "--noinput"]
+      restartPolicy: Never
