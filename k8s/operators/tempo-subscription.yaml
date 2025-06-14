@@ -1,0 +1,10 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: tempo-operator
+  namespace: operators
+spec:
+  name: tempo-operator
+  channel: alpha
+  source: operatorhubio-catalog
+  sourceNamespace: olm

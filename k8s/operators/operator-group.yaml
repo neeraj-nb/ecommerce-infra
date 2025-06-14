@@ -1,0 +1,6 @@
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: operators-group
+  namespace: operators
+spec: {}  # Cluster-scoped: allows to watch any namespace
