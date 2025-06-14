@@ -4,6 +4,7 @@ metadata:
   name: user-service
   labels:
     name: user-service
+    namespace: user-service
 spec:
   rules:
   - host: "myapp.local"

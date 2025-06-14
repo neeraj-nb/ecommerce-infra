@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: user-database
+  namespace: user-service
 spec:
   selector:
     matchLabels:
