@@ -1,3 +1,5 @@
 .env
 ansible/inventory.ini
 .vscode
+.terraform
+*.tfstate
