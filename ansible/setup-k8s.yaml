@@ -1,0 +1,114 @@
+- hosts: all
+  become: true
+  tasks:
+  - name: Update APT package index
+    apt:
+      update_cache: yes
+
+  - name: Upgrade
+    apt:
+      upgrade: yes
+
+  - name: Install prerequsites
+    apt:
+      name:
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - gpg
+      state: present
+
+  - name: Install containerd
+    apt:
+      name: containerd
+      state: present
+    
+  - name: Create /etc/containerd
+    file:
+      path: /etc/containerd
+      state: directory
+      mode: '0755'
+
+  - name: Generate default containerd config
+    command: containerd config default
+    register: containerd_config
+
+  - name: Write containerd config to file
+    copy:
+      content: "{{ containerd_config.stdout }}"
+      dest: /etc/containerd/config.toml
+      mode: '0644'
+
+  - name: Restart and enable containerd
+    systemd:
+      name: containerd
+      state: restarted
+      enabled: yes
+
+  - name: Disable swap (runtime)
+    command: swapoff -a
+
+  - name: Remove swap entry from /etc/fstab (persistent)
+    replace:
+      path: /etc/fstab
+      regexp: '^([^#].*\sswap\s.*)$'
+      replace: '# \1'
+
+  - name: Set SystemdCgroup = true in containerd config
+    replace:
+      path: /etc/containerd/config.toml
+      regexp: '^\s*SystemdCgroup = false'
+      replace: 'SystemdCgroup = true'
+
+  - name: Restart containerd to apply cgroup change
+    systemd:
+      name: containerd
+      state: restarted
+
+  - name: Create /etc/apt/keyrings directory
+    file:
+      path: /etc/apt/keyrings
+      state: directory
+      mode: '0755'
+      owner: root
+      group: root
+
+  - name: Download Kubernetes GPG key
+    get_url:
+      url: https://pkgs.k8s.io/core:/stable:/v1.32/deb/Release.key
+      dest: /tmp/kubernetes-release.key
+      mode: '0644'
+
+  - name: Convert key to GPG format and store in keyrings
+    command: >
+      gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg /tmp/kubernetes-release.key
+    args:
+      creates: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+
+  - name: Add Kubernetes APT repository
+    copy:
+      dest: /etc/apt/sources.list.d/kubernetes.list
+      content: |
+        deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /
+      mode: '0644'
+
+  - name: Update APT package index
+    apt:
+      update_cache: yes
+
+  - name: Install Kubernetes components
+    apt:
+      name:
+        - kubelet
+        - kubeadm
+        - kubectl
+      state: present
+
+  - name: Hold Kubernetes packages
+    command: apt-mark hold kubelet kubeadm kubectl
+
+  - name: Enable and start kubelet
+    systemd:
+      name: kubelet
+      enabled: yes
+      state: started

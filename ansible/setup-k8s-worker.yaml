@@ -1,0 +1,6 @@
+- name: Setup Woker Node
+  hosts: workers
+  become: true
+  tasks:
+  - name: Run kubeadm join script
+    command: /join-command.sh

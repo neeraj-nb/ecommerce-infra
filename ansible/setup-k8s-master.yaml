@@ -1,0 +1,47 @@
+- name: Setup Mater Node
+  hosts: control_plane
+  become: true
+  tasks:
+  - name: Kubeadm Init
+    command: kubeadm init --pod-network-cidr=192.168.0.0/16 --ignore-preflight-errors=all
+
+  - name: Create .kube directory
+    file:
+      path: "/home/{{ ansible_user }}/.kube"
+      state: directory
+      mode: '0755'
+      owner: "{{ ansible_user }}"
+      group: "{{ ansible_user }}"
+
+  - name: Copy admin.conf to user kube config
+    copy:
+      src: /etc/kubernetes/admin.conf
+      dest: "/home/{{ ansible_user }}/.kube/config"
+      remote_src: yes
+      owner: "{{ ansible_user }}"
+      group: "{{ ansible_user }}"
+      mode: '0644'
+
+  - name: Install CNI plugin
+    command: kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.26.1/manifests/calico.yaml
+    # add wait for connection
+
+  - name: Generate kubeadm join command
+    command: kubeadm token create --print-join-command
+    register: join_cmd
+
+  - name: Save join command to file
+    copy:
+      content: "{{ join_cmd.stdout }}"
+      dest: "/tmp/kubeadm-join-command.sh"
+      mode: '0755'
+
+  - name: Fetch join command from remote to local
+    fetch:
+      src: "/tmp/kubeadm-join-command.sh"
+      dest: "./join-command.sh"
+      flat: yes
+
+  - name: Show join command
+    debug:
+      msg: "{{ join_cmd.stdout }}"
