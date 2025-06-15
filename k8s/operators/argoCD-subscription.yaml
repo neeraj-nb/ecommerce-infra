@@ -19,7 +19,7 @@ metadata:
   name: argocd-operator
   namespace: argocd
 spec:
-  channel: stable
+  channel: alpha
   name: argocd-operator
-  source: community-operators
+  source: operatorhubio-catalog
   sourceNamespace: olm
