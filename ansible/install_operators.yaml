@@ -25,6 +25,12 @@
       msg: "{{ result.stdout }}"
     notify: [show_result]
 
+  - name: Install Tempo Operator
+    command: kubectl create -f https://operatorhub.io/install/tempo-operator.yaml
+    vars:
+      msg: "{{ result.stdout }}"
+    notify: [show_result]
+
   handlers:
     - name: show_result
       debug:
