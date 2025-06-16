@@ -31,6 +31,12 @@
       msg: "{{ result.stdout }}"
     notify: [show_result]
 
+  - name: Install Elasticsearch (ECK) Operator
+    command: kubectl create -f https://operatorhub.io/install/elastic-cloud-eck.yaml
+    vars:
+      msg: "{{ result.stdout }}"
+    notify: [show_result]
+
   handlers:
     - name: show_result
       debug:
