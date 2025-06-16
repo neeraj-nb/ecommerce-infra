@@ -19,6 +19,12 @@
       msg: "{{ result.stdout }}"
     notify: [show_result]
 
+  - name: Install Grafana Operator
+    command: kubectl create -f https://operatorhub.io/install/grafana-operator.yaml
+    vars:
+      msg: "{{ result.stdout }}"
+    notify: [show_result]
+
   handlers:
     - name: show_result
       debug:
