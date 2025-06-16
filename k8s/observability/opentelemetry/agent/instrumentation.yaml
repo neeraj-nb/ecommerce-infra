@@ -1,0 +1,10 @@
+apiVersion: opentelemetry.io/v1alpha1
+kind: Instrumentation
+metadata:
+  name: app-auto-instrumentation
+  namespace: default
+spec:
+  exporter:
+    endpoint: http://otel-gateway.default.svc:4317
+  python:
+    image: ghcr.io/open-telemetry/opentelemetry-operator/autoinstrumentation-python:latest
