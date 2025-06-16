@@ -2,7 +2,7 @@ apiVersion: monitoring.coreos.com/v1
 kind: Alertmanager
 metadata:
   name: alertmanager
-  namespace: monitoring
+  namespace: observability
 spec:
   replicas: 1
   serviceAccountName: alertmanager-main

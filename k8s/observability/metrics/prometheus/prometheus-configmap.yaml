@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: prometheus-additional-scrape
-  namespace: monitoring
+  namespace: observability
 data:
   additional-scrape-configs.yaml: |
     - job_name: 'kubernetes-pods'
