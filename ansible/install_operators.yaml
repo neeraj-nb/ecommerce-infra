@@ -1,0 +1,8 @@
+- name: Install Operators
+  hosts: control_plane
+  tasks:
+  - name: Install Operator Lifecycle Manager (OLM)
+    command: curl -sL https://github.com/operator-framework/operator-lifecycle-manager/releases/download/v0.32.0/install.sh | bash -s v0.32.0
+
+  - name: Install Prometheus Operator
+    command: kubectl create -f https://operatorhub.io/install/prometheus.yaml
