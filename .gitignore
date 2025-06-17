@@ -3,3 +3,4 @@ ansible/inventory.ini
 .vscode
 .terraform
 *.tfstate
+*.tfstate.backup
