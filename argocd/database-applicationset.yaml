@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: services-applicationset
+  namespace: argocd
+spec:
+  generators:
+    - git:
+        repoURL: https://github.com/neeraj-nb/ecommerce-infra.git
+        revision: HEAD
+        directories:
+          - path: k8s/databases/*
+  template:
+    metadata:
+      name: '{{path.basename}}'
+      annotations:
+        argocd.argoproj.io/sync-wave: "0"
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/neeraj-nb/ecommerce-infra.git
+        targetRevision: HEAD
+        path: '{{path}}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{path.basename}}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
