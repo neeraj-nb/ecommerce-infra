@@ -2,8 +2,19 @@
   hosts: control_plane
   become: true
   tasks:
+  - name: Check if kubeadm is already initialized
+    stat:
+      path: /etc/kubernetes/admin.conf
+    register: kubeadm_initialized
+
   - name: Kubeadm Init
-    command: kubeadm init --pod-network-cidr=192.168.0.0/16 --ignore-preflight-errors=all
+    command: kubeadm init --pod-network-cidr=192.168.0.0/16
+    when: not kubeadm_initialized.stat.exists
+
+  - name: Check admin.conf exist
+    stat:
+      path: "/home/{{ ansible_user }}/.kube/config"
+    register: admin_conf
 
   - name: Create .kube directory
     file:
@@ -12,6 +23,7 @@
       mode: '0755'
       owner: "{{ ansible_user }}"
       group: "{{ ansible_user }}"
+    when: not admin_conf.stat.exists
 
   - name: Copy admin.conf to user kube config
     copy:
@@ -21,10 +33,17 @@
       owner: "{{ ansible_user }}"
       group: "{{ ansible_user }}"
       mode: '0644'
+    when: not admin_conf.stat.exists
+
+  - name: Wait for Kubernetes API health to be ok
+    shell: curl -k https://localhost:6443/healthz
+    register: result
+    retries: 30
+    delay: 10
+    until: result.stdout == "ok"
 
   - name: Install CNI plugin
     command: kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.26.1/manifests/calico.yaml
-    # add wait for connection
 
   - name: Generate kubeadm join command
     command: kubeadm token create --print-join-command

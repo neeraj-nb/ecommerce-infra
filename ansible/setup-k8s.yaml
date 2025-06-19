@@ -112,3 +112,10 @@
       name: kubelet
       enabled: yes
       state: started
+
+  - name: Enable IPv4 forwarding (temporary and persistent)
+    ansible.posix.sysctl:
+      name: net.ipv4.ip_forward
+      value: '1'
+      state: present
+      reload: yes
