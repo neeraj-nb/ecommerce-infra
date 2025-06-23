@@ -7,6 +7,18 @@
       path: /etc/kubernetes/admin.conf
     register: kubeadm_initialized
 
+  - name: Uncomment net.ipv4.ip_forward in sysctl.conf
+    ansible.builtin.lineinfile:
+      path: /etc/sysctl.conf
+      regexp: '^#(net\.ipv4\.ip_forward=1)'
+      line: '\1'
+      backrefs: yes
+
+  - name: Apply sysctl settings
+    ansible.builtin.command: sysctl -p
+    register: sysctl_output
+    changed_when: "'net.ipv4.ip_forward = 1' in sysctl_output.stdout"
+
   - name: Kubeadm Init
     command: kubeadm init --pod-network-cidr=192.168.0.0/16
     when: not kubeadm_initialized.stat.exists
