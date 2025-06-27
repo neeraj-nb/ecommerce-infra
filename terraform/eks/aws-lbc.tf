@@ -42,6 +42,7 @@ resource "helm_release" "aws_lbc" {
   chart = "aws-load-balancer-controller"
   namespace = "kube-system"
   version = "1.13.3"
+  recreate_pods = true
 
   set = [
     {
@@ -51,7 +52,19 @@ resource "helm_release" "aws_lbc" {
     {
         name = "serviceAccount.name"
         value = "aws-load-balancer-controller"
-    }
+    },
+    {
+      name = "vpcId"
+      value = aws_vpc.k8s-vpc.id
+    },
+    # {
+    #   name = "securityGroup.id"
+    #   value = aws_security_group.alb.id
+    # },
+    #     {
+    #     name = "serviceAccount.create"
+    #     value = "false"
+    # },
   ]
 
   depends_on = [ 

@@ -6,6 +6,7 @@ resource "helm_release" "nginx_external" {
   namespace = "ingress"
   create_namespace = true
   version = "4.12.3"
+  recreate_pods = true
 
   values = [file("./values/nginx-ingress-external.yaml")]
 
@@ -20,6 +21,7 @@ resource "helm_release" "nginx_internal" {
   namespace = "ingress"
   create_namespace = true
   version = "4.12.3"
+  recreate_pods = true
 
   values = [file("./values/nginx-ingress-internal.yaml")]
 

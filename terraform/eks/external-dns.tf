@@ -42,6 +42,7 @@ resource "helm_release" "external_dns" {
   name = "external-dns"
   chart = "external-dns"
   namespace = "kube-system"
+  recreate_pods = true
 
   set = [ 
     {
@@ -75,6 +76,6 @@ resource "helm_release" "external_dns" {
   ]
 
   depends_on = [ 
-    helm_release.aws_lbc
+    helm_release.nginx_internal
    ]
 }
