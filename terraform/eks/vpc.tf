@@ -11,7 +11,7 @@ resource "aws_vpc" "k8s-vpc" {
   enable_dns_hostnames = true
 
   tags = {
-    name = "${var.project_name}-${var.environment}"
+    Name = "${var.project_name}-${var.environment}"
     project = var.project_name
     environment = var.environment
     managed = "terraform"
@@ -34,7 +34,7 @@ resource "aws_subnet" "public_subnet" {
   map_public_ip_on_launch = true
 
   tags = {
-    name = "${var.project_name}-${var.environment}-k8s-public-${count.index}"
+    Name = "${var.project_name}-${var.environment}-k8s-public-${count.index}"
     project = var.project_name
     environment = var.environment
     managed = "terraform"
@@ -50,7 +50,7 @@ resource "aws_subnet" "private_subnet" {
   cidr_block = local.private_subnets[count.index]
 
   tags = {
-    name = "${var.project_name}-${var.environment}-k8s-private-${count.index}"
+    Name = "${var.project_name}-${var.environment}-k8s-private-${count.index}"
     project = var.project_name
     environment = var.environment
     managed = "terraform"
@@ -63,7 +63,7 @@ resource "aws_internet_gateway" "internet_gateway" {
   vpc_id = aws_vpc.k8s-vpc.id
 
   tags = {
-    name = "${var.project_name}-${var.environment}"
+    Name = "${var.project_name}-${var.environment}"
     project = var.project_name
     environment = var.environment
     managed = "terraform"
@@ -75,7 +75,7 @@ resource "aws_eip" "nat_eip" {
   domain = "vpc"
 
   tags = {
-    name = "${var.project_name}-${var.environment}-nat-${count.index}"
+    Name = "${var.project_name}-${var.environment}-nat-${count.index}"
     project = var.project_name
     environment = var.environment
     managed = "terraform"
@@ -85,9 +85,9 @@ resource "aws_eip" "nat_eip" {
 resource "aws_nat_gateway" "nat_gateway" {
   count = 2
   allocation_id = aws_eip.nat_eip[count.index].id
-  subnet_id = aws_subnet.private_subnet[count.index].id
+  subnet_id = aws_subnet.public_subnet[count.index].id
   tags = {
-    name = "${var.project_name}-${var.environment}-nat-${count.index}"
+    Name = "${var.project_name}-${var.environment}-nat-${count.index}"
     project = var.project_name
     environment = var.environment
     managed = "terraform"
@@ -104,7 +104,7 @@ resource "aws_route_table" "public" {
   }
 
   tags = {
-    name = "${var.project_name}-${var.environment}-public"
+    Name = "${var.project_name}-${var.environment}-public"
     project = var.project_name
     environment = var.environment
     managed = "terraform"
@@ -121,7 +121,7 @@ resource "aws_route_table" "private" {
   }
 
   tags = {
-    name = "${var.project_name}-${var.environment}-private"
+    Name = "${var.project_name}-${var.environment}-private"
     project = var.project_name
     environment = var.environment
     managed = "terraform"

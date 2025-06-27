@@ -27,9 +27,14 @@ resource "aws_iam_role_policy_attachment" "node_role-AmazonEC2ContainerRegistryR
   role       = aws_iam_role.node_role.name
 }
 
+data "aws_ssm_parameter" "eks_ami_release_version" {
+  name = "/aws/service/eks/optimized-ami/${aws_eks_cluster.eks_cluster.version}/amazon-linux-2023/x86_64/standard/recommended/release_version"
+}
+
 resource "aws_eks_node_group" "general" {
   cluster_name = aws_eks_cluster.eks_cluster.name
   version = aws_eks_cluster.eks_cluster.version
+  release_version = nonsensitive(data.aws_ssm_parameter.eks_ami_release_version.value)
   node_group_name = "general"
   node_role_arn = aws_iam_role.node_role.arn
   subnet_ids = aws_subnet.private_subnet[*].id
@@ -37,9 +42,14 @@ resource "aws_eks_node_group" "general" {
   capacity_type = "ON_DEMAND"
   instance_types = ["t3.medium"]
 
+  remote_access {
+    ec2_ssh_key = "lab"
+    source_security_group_ids = [aws_security_group.eks_woker_sg.id]
+  }
+
   scaling_config {
-    desired_size = 1
-    max_size = 2
+    desired_size = 2
+    max_size = 3
     min_size = 1
   }
 
@@ -63,7 +73,7 @@ resource "aws_eks_node_group" "general" {
    }
 
    tags = {
-    name = "${var.project_name}-${var.environment}-node_group"
+    Name = "${var.project_name}-${var.environment}-node_group"
     project = var.project_name
     environment = var.environment
     managed = "terraform"
