@@ -4,17 +4,17 @@ metadata:
   name: argocd-ingress
   namespace: argocd
   annotations:
-    alb.ingress.kubernetes.io/scheme: internet-facing
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internal
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 443}]'
-    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-south-1:204649420486:certificate/05f28e0c-580b-41f3-83ed-d7c826bb853d
-    alb.ingress.kubernetes.io/backend-protocol: HTTPS
-    alb.ingress.kubernetes.io/ssl-redirect: '443'
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-south-1:204649420486:certificate/109d9b40-69eb-4cc0-836f-9e353b9db91f
     alb.ingress.kubernetes.io/target-type: ip
     alb.ingress.kubernetes.io/load-balancer-name: argocd-alb
+    external-dns.alpha.kubernetes.io/hostname: argocd.neerajbabu.tech
 spec:
   ingressClassName: alb
   rules:
-    - host: argocd.ecommerce.neerajbabu.tech
+    - host: argocd.neerajbabu.tech
       http:
         paths:
           - path: /
@@ -24,3 +24,6 @@ spec:
                 name: argocd-server
                 port:
                   number: 443
+  tls:
+    - hosts:
+      - argocd.neerajbabu.tech
