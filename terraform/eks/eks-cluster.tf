@@ -44,9 +44,17 @@ resource "aws_eks_cluster" "eks_cluster" {
    ]
 
    tags = {
-    name = "${var.project_name}-${var.environment}-cluster}"
+    Name = "${var.project_name}-${var.environment}-cluster"
     project = var.project_name
     environment = var.environment
     managed = "terraform"
    }
+}
+
+resource "aws_eks_addon" "pod_identity" {
+  cluster_name = aws_eks_cluster.eks_cluster.name
+  addon_name = "eks-pod-identity-agent"
+  # addon_version = "v1.2.0-eksbuild.1" - gets latest version
+
+  depends_on = [ aws_eks_node_group.general ]
 }
