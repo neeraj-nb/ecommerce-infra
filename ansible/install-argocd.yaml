@@ -1,0 +1,53 @@
+- name: Install ArgoCD
+  hosts: localhost
+  gather_facts: no
+  collections:
+    - community.kubernetes
+
+  tasks:
+  - name: Create argocd namespace
+    k8s:
+      api_version: v1
+      kind: Namespace
+      name: argocd
+      state: present
+
+  - name: Apply ArgoCD install manifests
+    k8s:
+      state: present
+      namespace: argocd
+      definition: "{{ lookup('url', 'https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml') }}"
+
+  - name: Wait for all ArgoCD pods to be ready
+    vars:
+      argocd_pods_ready: false
+    retries: 20
+    delay: 15
+    until: argocd_pods_ready
+    block:
+      - name: Get ArgoCD pods
+        k8s_info:
+          kind: Pod
+          namespace: argocd
+        register: argocd_pods
+
+      - name: Check if all pods are ready
+        set_fact:
+          argocd_pods_ready: >-
+            {{
+              argocd_pods.resources
+              | selectattr('status.containerStatuses', 'defined')
+              | map('extract', attribute='status.containerStatuses')
+              | map('map', attribute='ready')
+              | map('min')
+              | min
+            }}
+
+  - name: Apply Argo manifests
+    k8s:
+      state: present
+      src: "{{ item }}"
+    with_fileglob:
+      - "../argocd/*.yaml"
+    loop_control:
+      label: "{{ item }}"
