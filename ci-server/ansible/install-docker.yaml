@@ -1,0 +1,25 @@
+- name: Install Docker
+  hosts: ci_server
+  become: yes
+  tasks:
+    - name: Update and upgrade
+      apt:
+        update_cache: yes
+        upgrade: yes
+
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+
+    - name: Install Docker compose
+      apt:
+        name: docker-compose
+        state: present
+
+
+    - name: Start Docker
+      service:
+        name: docker
+        state: started
+        enabled: yes

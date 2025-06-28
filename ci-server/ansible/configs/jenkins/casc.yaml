@@ -1,0 +1,20 @@
+jenkins:
+  clouds:
+    - docker:
+        name: docker-cloud
+        dockerApi:
+          dockerHost:
+            uri: "unix:///var/run/docker.sock"
+        templates:
+          - labelString: "docker-agent"
+            dockerTemplateBase:
+              image: "jenkins/inbound-agent"
+              pullCredentialsId: ""
+              memoryLimit: 512
+            remoteFs: "/home/jenkins/agent"
+            connector:
+              attach:
+                user: jenkins
+            instanceCapStr: "10"
+            retentionStrategy:
+              idleMinutes: 5
