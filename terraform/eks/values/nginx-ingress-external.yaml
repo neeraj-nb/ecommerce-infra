@@ -9,3 +9,6 @@ controller:
       service.beta.kubernetes.io/aws-load-balancer-type: external
       service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
       service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+      service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:ap-south-1:204649420486:certificate/109d9b40-69eb-4cc0-836f-9e353b9db91f
+      service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
+      external-dns.alpha.kubernetes.io/hostname: ecomm.neerajbabu.tech
