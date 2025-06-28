@@ -26,7 +26,7 @@ resource "aws_iam_role_policy_attachment" "ebs_csi_driver" {
 
 # Optional: only if you want to encrypt the EBS drives
 resource "aws_iam_policy" "ebs_csi_driver_encryption" {
-  name = "${aws_eks_cluster.eks.name}-ebs-csi-driver-encryption"
+  name = "${aws_eks_cluster.eks_cluster.name}-ebs-csi-driver-encryption"
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -64,4 +64,22 @@ resource "aws_eks_addon" "ebs_csi_driver" {
   service_account_role_arn = aws_iam_role.ebs_csi_driver.arn
 
   depends_on = [aws_eks_node_group.general]
+}
+
+resource "kubernetes_storage_class" "ebs_gp3" {
+  metadata {
+    name = "gp3"
+    annotations = {
+      "storageclass.kubernetes.io/is-default-class" = "true"
+    }
+  }
+
+  storage_provisioner = "ebs.csi.aws.com"
+  reclaim_policy       = "Delete"
+  volume_binding_mode  = "WaitForFirstConsumer"
+
+  parameters = {
+    type = "gp3"
+    fsType = "ext4"
+  }
 }
