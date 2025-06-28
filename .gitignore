@@ -4,3 +4,4 @@ ansible/inventory.ini
 .terraform
 *.tfstate
 *.tfstate.backup
+*ovpn

@@ -8,7 +8,7 @@ resource "aws_route53_zone" "internal" {
 resource "aws_ec2_client_vpn_endpoint" "internal_vpn" {
   description = "internal-vpn"
   server_certificate_arn = "arn:aws:acm:ap-south-1:204649420486:certificate/109d9b40-69eb-4cc0-836f-9e353b9db91f"
-  client_cidr_block = "10.10.0.0/24"
+  client_cidr_block = "10.10.0.0/22"
 
   authentication_options {
     type = "certificate-authentication"
@@ -30,7 +30,7 @@ resource "aws_ec2_client_vpn_endpoint" "internal_vpn" {
 resource "aws_ec2_client_vpn_network_association" "internal" {
   count = 2
   client_vpn_endpoint_id = aws_ec2_client_vpn_endpoint.internal_vpn.id
-  subnet_id = local.private_subnets[count.index]
+  subnet_id = aws_subnet.private_subnet[count.index].id
 }
 
 resource "aws_ec2_client_vpn_authorization_rule" "eks_access" {
@@ -39,8 +39,8 @@ resource "aws_ec2_client_vpn_authorization_rule" "eks_access" {
   authorize_all_groups = true
 }
 
-resource "aws_ec2_client_vpn_route" "eks_cluster" {
-  client_vpn_endpoint_id = aws_ec2_client_vpn_endpoint.internal_vpn.id
-  destination_cidr_block = var.vpc_cidr
-  target_vpc_subnet_id = local.private_subnets[0]
-}
+# resource "aws_ec2_client_vpn_route" "eks_cluster" {
+#   client_vpn_endpoint_id = aws_ec2_client_vpn_endpoint.internal_vpn.id
+#   destination_cidr_block = var.vpc_cidr
+#   target_vpc_subnet_id = aws_subnet.private_subnet[0].id
+# }
