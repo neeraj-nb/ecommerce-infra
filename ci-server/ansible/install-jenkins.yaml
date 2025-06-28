@@ -3,27 +3,27 @@
   become: yes
   
   tasks:
-    - name: Ensure Docker is running
-      service:
-        name: docker
-        state: started
+  - name: Ensure Docker is running
+    service:
+      name: docker
+      state: started
 
-    - name: Make jenkins home directory
-      file:
-        path: "{{ jenkins_dir }}"
-        state: directory
-        owner: 1000
-        group: 1000
-        mode: '0755'
+  - name: Make jenkins home directory
+    file:
+      path: "{{ jenkins_dir }}"
+      state: directory
+      owner: 1000
+      group: 1000
+      mode: '0755'
 
-    - name: Copy docker compose
-      copy:
-        src: configs/jenkins/
-        dest: "{{ jenkins_dir }}"
-        mode: '0644'
+  - name: Copy docker compose
+    copy:
+      src: configs/jenkins/
+      dest: "{{ jenkins_dir }}"
+      mode: '0644'
 
-    - name: Run jenkins container with compose
-      shell: docker-compose up -d
-      args:
-        chdir: "{{ jenkins_dir }}"
+  - name: Run jenkins container with compose
+    shell: docker-compose up -d
+    args:
+      chdir: "{{ jenkins_dir }}"
       

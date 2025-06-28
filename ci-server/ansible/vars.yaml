@@ -1,4 +1,7 @@
 jenkins_container_name: jenkins
-jenkins_home: /var/jenkins_home
+jenkins_dir: /var/jenkins_home
 jenkins_image: jenkins/jenkins:lts
 jenkins_port: 8080
+
+
+sonarqube_dir: /var/sonarqube
