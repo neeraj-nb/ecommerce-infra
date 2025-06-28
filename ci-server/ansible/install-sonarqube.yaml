@@ -1,0 +1,28 @@
+- name: Install SonarQube
+  hosts: ci_server
+  become: yes
+  
+  tasks:
+    - name: Ensure Docker is running
+      service:
+        name: docker
+        state: started
+
+    - name: Make SonarQube home directory
+      file:
+        path: "{{ sonarqube_dir }}"
+        state: directory
+        owner: 1000
+        group: 1000
+        mode: '0755'
+
+    - name: Copy docker compose
+      copy:
+        src: configs/sonarqube/
+        dest: "{{ sonarqube_dir }}"
+        mode: '0644'
+
+    - name: Run SonarQube container with compose
+      shell: docker-compose up -d
+      args:
+        chdir: "{{ sonarqube_dir }}"

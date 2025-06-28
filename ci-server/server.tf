@@ -52,8 +52,8 @@ resource "aws_route_table_association" "public" {
 }
 
 resource "aws_security_group" "ci-server-sg" {
-  name        = "allow_ssh"
-  description = "Allow SSH inbound traffic"
+  name        = "ci-sg"
+  description = "Allow CI services inbound traffic"
   vpc_id      = aws_vpc.ci-server-vpc.id
 
   ingress {
@@ -66,6 +66,13 @@ resource "aws_security_group" "ci-server-sg" {
   ingress {
     from_port = 8080
     to_port = 8080
+    protocol = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port = 9000
+    to_port = 9000
     protocol = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
