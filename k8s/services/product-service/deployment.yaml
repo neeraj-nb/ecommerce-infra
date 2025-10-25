@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-service
+  namespace: product-service
+spec:
+  selector:
+    matchLabels:
+      app: product-service
+  template:
+    metadata:
+      labels:
+        app: product-service
+    spec:
+      containers:
+      - name: product-service
+        image: neerajbabu/product-service:latest
+        command: ["/start.prod.sh"]
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8000
+        envFrom:
+        - configMapRef:
+            name: product-service-configmap
+        - secretRef:
+            name: product-service-secret
+        livenessProbe:
+          httpGet:
+            path: /health/
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ready/
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+

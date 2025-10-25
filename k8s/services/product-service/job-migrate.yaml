@@ -1,0 +1,18 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: product-service-job-migrate
+  namespace: product-service
+spec:
+  template:
+    spec:
+      containers:
+      - name: migrate
+        image: neerajbabu/product-service:latest
+        envFrom:
+        - configMapRef:
+            name: product-service-configmap
+        - secretRef:
+            name: product-service-secret
+        command: ["python", "manage.py", "migrate", "--noinput"]
+      restartPolicy: Never
