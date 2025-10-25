@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: product-database-configmap
+  namespace: product-service
+data:
+  POSTGRES_USER: postgres
+  POSTGRES_DB: product
+  POSTGRES_HOST: postgres
+  POSTGRES_PORT: "5432"

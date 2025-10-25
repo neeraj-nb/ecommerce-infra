@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: product-database
+  namespace: product-service
+spec:
+  selector:
+    matchLabels:
+      app: product-database
+  serviceName: "product-database-service"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: product-database
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:15
+          ports:
+            - containerPort: 5432
+          envFrom:
+          - configMapRef:
+              name: product-database-configmap
+          - secretRef:
+              name: product-database-secret
+          volumeMounts:
+            - name: pgdata
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: pgdata
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: gp3
+        resources:
+          requests:
+            storage: 1Gi
+
