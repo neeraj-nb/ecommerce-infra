@@ -1,0 +1,11 @@
+configMapGenerator:  # generate config maps using kustomization
+  - name: k6-scripts
+    files:
+      - scripts/product-list-load-test.js
+      - scripts/product-load-test.js
+generatorOptions:
+  disableNameSuffixHash: true
+resources:
+  - k6-job.yaml
+
+# kubectl apply -k ./k8s - to apply

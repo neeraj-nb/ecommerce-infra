@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: k6-load-test
+  namespace: reliabilty
+spec:
+  template:
+    spec:
+      containers:
+        - name: k6
+          image: grafana/k6-latest
+          command: ["/bin/sh"]
+          args:
+            - "-c"
+            - |
+              k6 run /scripts/product-list-load-test.js &&
+              k6 run /scripts/product-load-test.js
+          stdin: true
+          tty: true
+          volumeMounts:
+          - name: k6-scripts # load scripts as conif maps instead of baking into image
+            mountPath: /scripts
+      restartPolicy: Never
+      volumes:
+        - name: k6-scripts
+          configMap:
+            name: k6-scripts
+      

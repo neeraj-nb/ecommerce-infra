@@ -5,3 +5,4 @@ ansible/inventory.ini
 *.tfstate
 *.tfstate.backup
 *ovpn
+node_modules
